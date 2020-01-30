@@ -54,6 +54,7 @@ N_B = 500
 E_min = 0.0
 E_max = 60.0
 delta_E = 0.5
+delta_ESq = delta_E * delta_E
 num_E = 120
 # ------------------------------------------------------------------
 
@@ -64,7 +65,7 @@ num_E = 120
 dat = np.empty((num_E, N_B), dtype = np.float)
 for B in range(N_B):        # Samples for bootstrapping
   for i in range(num_E):    # Scanning energy range [0, E_max) by delta_E
-    E_i = i * delta_E + 10.0
+    E_i = i * delta_E
     E_p = E_i + delta_E
     a_i = 0.01 * (E_i + 0.5 * delta_E)      # Initial guess discussed above
     for n in range(N_RM):   # Robbins--Monro recursion
@@ -76,8 +77,8 @@ for B in range(N_B):        # Samples for bootstrapping
       # en.wikipedia.org/wiki/Inverse_transform_sampling
       lo = np.exp(-a_i * E_p)
       hi = np.exp(-a_i * E_i)
-#      if n == 0:
-#        print "%d, %.4g, %.4g, %.4g, %.4g" % (i, E_i, E_p, lo, hi)
+      if n == 0:
+        print "%d, %.4g, %.4g, %.4g, %.4g" % (i, E_i, E_p, lo, hi)
       u = prng.uniform(lo, hi, N_SW)
       energies = -np.log(u) / a_i
 
@@ -85,12 +86,12 @@ for B in range(N_B):        # Samples for bootstrapping
       vev_delta_E = sum(energies) / N_SW - E_i - 0.5 * delta_E
 
       # Update a_i and check for convergence to -x_i / 128
-      a_i = a_i + 12.0 * vev_delta_E / ((n + 1) * delta_E * delta_E)
+      a_i = a_i + 12.0 * vev_delta_E / ((n + 1) * delta_ESq)
       print "%d %.4g %.4g" % (n, a_i, -E_i / 128)
+    sys.exit(0) # TODO: The loop above is not yet working...
 
     # Recursion complete, so now we have the Bth sample of dat[i]
     dat[i][B] = a_i
-    sys.exit(0)
 # ------------------------------------------------------------------
 
 
