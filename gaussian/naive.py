@@ -60,19 +60,19 @@ centers = np.arange(0.5 * spacing, maxdat + 1 - 0.5 * spacing, spacing)
 # Use 'density' to compare with P(x)
 # This seems to set the integral to unity
 # --> will have bins with less than 1/Npts = 1e-5...
-count, bins, ignored = plt.hist(dat, Nbins, density=True,
-                                histtype='step', hatch='//')
-norm = 2.0 / (stdev * np.sqrt(np.pi))   # Double to add both +/- sides
-plt.semilogy(bins, norm * np.exp(-bins**2 / stdev**2),
-             linewidth=2, color='r')
-plt.axis([0.0, 60.0, 1e-7, 0.1])
-plt.xticks(np.arange(0, 61, step=20))
-title = str(Npts) + ' samples with random seed ' + str(seed)
-plt.title(title)
-plt.xlabel('x')
-plt.ylabel('P(x) ~ exp[-x^2 / 16^2]')
-outfile = 'naive_check.pdf'
-plt.savefig(outfile)
+#count, bins, ignored = plt.hist(dat, Nbins, density=True,
+#                                histtype='step', hatch='//')
+#norm = 2.0 / (stdev * np.sqrt(np.pi))   # Double to add both +/- sides
+#plt.semilogy(bins, norm * np.exp(-bins**2 / stdev**2),
+#             linewidth=2, color='r')
+#plt.axis([0.0, 60.0, 1e-7, 0.1])
+#plt.xticks(np.arange(0, 61, step=20))
+#title = str(Npts) + ' samples with random seed ' + str(seed)
+#plt.title(title)
+#plt.xlabel('x')
+#plt.ylabel('P(x) ~ exp[-x^2 / 16^2]')
+#outfile = 'naive_check.pdf'
+#plt.savefig(outfile)
 #plt.show()
 
 # Reference for bootstrapping:
