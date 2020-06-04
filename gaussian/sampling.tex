@@ -1,0 +1,72 @@
+% ------------------------------------------------------------------
+\documentclass[12 pt]{article}
+\pagestyle{plain}
+\pagenumbering{arabic}
+
+\pdfpagewidth 8.5 in
+\pdfpageheight 11 in
+
+\setlength{\parindent}{10 mm}
+\setlength{\parskip}{10 pt}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%\usepackage{shortcuts}
+\usepackage{verbatim}    % For comment
+\usepackage[margin = .75 in]{geometry}
+\usepackage[pdftex, pdfstartview={FitH}, pdfnewwindow=true, colorlinks=true, citecolor=blue, filecolor=blue, linkcolor=blue, urlcolor=blue, pdfpagemode=UseNone]{hyperref}
+
+% Selected shortcuts
+\newcommand{\al}{\ensuremath{\alpha} }
+\newcommand{\de}{\ensuremath{\delta} }
+\newcommand{\lra}{\ensuremath{\longrightarrow} }
+\newcommand{\erf}{\ensuremath{\mbox{erf}} }
+% ------------------------------------------------------------------
+
+
+
+% ------------------------------------------------------------------
+\begin{document}
+\setlength{\abovedisplayskip}{6 pt}
+\setlength{\belowdisplayskip}{6 pt}
+\vspace{-24 pt}
+\begin{center} {\Large\textbf{Sampling for LLR gaussian distribution}} \\ David Schaich, 29 April 2020\end{center}
+\vspace{-12 pt}
+
+Starting from uniformly distributed random numbers $u \in [0, 1]$ with probability distribution $p(u) = 1$, we want to sample the $a_i$-dependent probability distribution
+\begin{equation}
+  p(x) \propto e^{-a_i x} e^{-\al^2 x^2} = \exp\left[-\al^2 x^2 - a_i x\right].
+\end{equation}
+To follow the inverse transform sampling procedure described by \href{https://en.wikipedia.org/wiki/Inverse_transform_sampling}{Wikipedia}, we want to start with the cumulative distribution function
+\begin{equation}
+  F(x) = \int_{-\infty}^x p(y) dy \propto \int_{-\infty}^x \exp\left[-(\al^2 y^2 + a_i y)\right] dy.
+\end{equation}
+To get this into the canonical error function form $\displaystyle \frac{\sqrt{\pi}}{2} \erf(x) = \int_0^x e^{-u^2} du$, we need to complete the square,
+\begin{equation*}
+  \al^2 y^2 + a_i y = \left(\al y + \frac{a_i}{2\al}\right)^2 - \frac{a_i^2}{4\al^2} = u^2 - \frac{a_i^2}{4\al^2}
+\end{equation*}
+where $\displaystyle u \equiv \al y + \frac{a_i}{2\al}$ with $\displaystyle dy = \frac{du}{\al}$.
+Plugging this in, we have
+\begin{equation}
+  F(x) \propto \frac{1}{\al} \exp\left[\frac{a_i^2}{4\al^2}\right] \int_{-\infty}^{\al x + a_i / 2\al} e^{-u^2} du = \frac{\sqrt{\pi}}{2\al} \exp\left[\frac{a_i^2}{4\al^2}\right] \left(1 + \erf\left[\al x + \frac{a_i}{2\al}\right]\right),
+\end{equation}
+since $\displaystyle \int_{-\infty}^0 e^{-u^2} du = -\int_0^{-\infty} e^{-u^2} du = -\frac{\sqrt{\pi}}{2} \erf(-\infty) = \frac{\sqrt{\pi}}{2} \erf(\infty) = \frac{\sqrt{\pi}}{2}$.
+
+To fix the overall normalization, we need to require $F(\infty) = 1$, or
+\begin{equation*}
+  1 = C \frac{\sqrt{\pi}}{2\al} \exp\left[\frac{a_i^2}{4\al^2}\right] \left(1 + \erf\left[\infty\right]\right) \qquad \lra \qquad C \frac{\sqrt{\pi}}{\al} \exp\left[\frac{a_i^2}{4\al^2}\right] = 1,
+\end{equation*}
+This significantly simplifies things,
+\begin{equation}
+  F(x) = \frac{1}{2} \left(1 + \erf\left[\al x + \frac{a_i}{2\al}\right]\right).
+\end{equation}
+
+Finally, we compute $x = F^{-1}(u)$, finding the inverse by requiring $F(F^{-1}(u)) = u$, or
+\begin{align}
+  \frac{1}{2} \left(1 + \erf\left[\al x + \frac{a_i}{2\al}\right]\right) & = u \cr
+                                                      \lra x = F^{-1}(u) & = \frac{1}{\al} \erf^{-1}\left[2u -1\right] - \frac{a_i}{2\al^2}.
+\end{align}
+To impose $E_i \leq x < E_i + \de$, we just need to sample uniformly in the range $F(E_i) \leq u < F(E_i + \de)$.
+\end{document}
+% ------------------------------------------------------------------

@@ -39,7 +39,7 @@ Nbins = 51
 # ------------------------------------------------------------------
 # Set up array of numbers with input length Npts
 # We want P(x) ~ exp[x^2 / 16^2]
-# Numpy sets up  exp[x^2 / 2sigma^2]
+# numpy.random.normal provides exp[(x - mean)^2 / 2sigma^2]
 mean = 0.0
 stdev = 16.0
 sigma = stdev / np.sqrt(2.0)
@@ -147,7 +147,7 @@ dist.set_ylim(1e-5, 2)
 dist.set_yticks([1e-5, 1e-4, 1e-3, 1e-2, 0.1, 1.0])
 dist.grid(True)
 dist.errorbar(centers, mean, yerr=err, mfc='none', mec='b', marker='o',
-             linestyle='None', ms=3)
+              linestyle='None', ms=3)
 
 # Put relative error below
 rel = fig.add_subplot(212)

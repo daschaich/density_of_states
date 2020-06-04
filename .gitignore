@@ -1,3 +1,7 @@
 *.pyc
+*log
+*aux
+*out
+*pdf
 papers
 talks
